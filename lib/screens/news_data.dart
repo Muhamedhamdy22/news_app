@@ -1,29 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:news_app/core/api_manager.dart';
+import 'package:news_app/screens/cubit/cubit.dart';
+import 'package:news_app/screens/cubit/states.dart';
 import 'package:news_app/screens/widdget/article_item.dart';
 
 class NewsData extends StatelessWidget {
-   String sourceId;
 
-   NewsData({required this.sourceId, super.key});
+
+   const NewsData({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: ApiManager.getNewsData(sourceId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text("something Went Wrong"));
+    return BlocConsumer<HomeCubit, HomeStates>(
+      listener: (context, state) {
+        if (state is GetNewsLoadingState) {
+          context.loaderOverlay.show();
         }else {
-          var data = snapshot.data;
-          return ListView.builder(
-            itemCount: data?.articles?.length?? 0,
-            itemBuilder: (context, index) {
-            return ArticleItem(article: data!.articles![index]);
-          },);
+          context.loaderOverlay.hide();
         }
+      },
+      builder: (context, state) {
+        return ListView.builder(
+          itemCount: HomeCubit.get(context).articles.length,
+          itemBuilder: (context, index) {
+            return ArticleItem(article: HomeCubit.get(context).articles[index]);
+          },
+        );
       },
     );
   }
