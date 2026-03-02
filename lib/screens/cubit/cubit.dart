@@ -16,11 +16,6 @@ class HomeCubit extends Cubit<HomeStates> {
     emit(HomeOnTapChanged());
     getNewsData(sources[selectedIndex].id??"");
   }
-
-
-
-
-
   static final dio = Dio();
   List<Sources> sources = [];
   List<Articles> articles = [];

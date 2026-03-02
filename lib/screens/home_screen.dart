@@ -6,6 +6,8 @@ import 'package:news_app/core/api_manager.dart';
 import 'package:news_app/screens/cubit/cubit.dart';
 import 'package:news_app/screens/cubit/states.dart';
 import 'package:news_app/screens/news_data.dart';
+import 'package:news_app/screens/views/categories_view.dart';
+import 'package:news_app/screens/views/sources_views.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String routeName = "HomeScreen";
@@ -18,55 +20,7 @@ class HomeScreen extends StatelessWidget {
     return LoaderOverlay(
       child: Scaffold(
         appBar: AppBar(centerTitle: true, title: Text("News App")),
-        body: BlocProvider(
-          create: (context) => HomeCubit()..getSources(),
-          child: BlocConsumer<HomeCubit, HomeStates>(
-            listener: (context, state) {
-              if (state is GetSourcesLoadingState) {
-                context.loaderOverlay.show();
-              }else {
-                context.loaderOverlay.hide();
-              }
-            },
-            builder: (context, state) {
-              // var cubit = BlocProvider.of<HomeCubit>(context);
-              return Column(
-                children: [
-                  DefaultTabController(
-                    length: HomeCubit.get(context).sources.length,
-                    initialIndex: HomeCubit.get(context).selectedIndex,
-                    child: TabBar(
-                      onTap: (value) {
-                        HomeCubit.get(context).onTapChanged(value);
-                      },
-                      isScrollable: true,
-                      padding: EdgeInsets.zero,
-                      tabAlignment: TabAlignment.start,
-                      dividerColor: Colors.transparent,
-                      labelStyle: GoogleFonts.inter(
-                        color: Color(0xFF171717),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      unselectedLabelStyle: GoogleFonts.inter(
-                        color: Color(0xFF171717),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      indicatorColor: Color(0xFF171717),
-                      unselectedLabelColor: Color(0xFF171717),
-                      labelColor: Color(0xFF171717),
-                      tabs: HomeCubit.get(context).sources
-                          .map((e) => Tab(child: Text(e.name ?? "")))
-                          .toList(),
-                    ),
-                  ),
-                  Expanded(child: NewsData()),
-                ],
-              );
-            },
-          ),
-        ),
+        body: CategoriesView(),
       ),
     );
   }
