@@ -52,7 +52,7 @@ class ArticleItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                article.author ?? "",
+                article.author?.split(" ").first ?? "",
                 style: GoogleFonts.inter(
                   color: Color(0xFFA0A0A0),
                   fontSize: 12,
