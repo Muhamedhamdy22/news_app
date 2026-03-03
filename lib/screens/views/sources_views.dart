@@ -7,12 +7,13 @@ import 'package:news_app/screens/cubit/states.dart';
 import 'package:news_app/screens/news_data.dart';
 
 class SourcesViews extends StatelessWidget {
-  const SourcesViews({super.key});
+  String ctId;
+   SourcesViews({super.key, required this.ctId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeCubit()..getSources(),
+      create: (context) => HomeCubit()..getSources(ctId),
       child: BlocConsumer<HomeCubit, HomeStates>(
         listener: (context, state) {
           if (state is GetSourcesLoadingState) {

@@ -34,11 +34,11 @@ class HomeCubit extends Cubit<HomeStates> {
     }
   }
 
-  Future<void> getSources() async {
+  Future<void> getSources(String categoryId) async {
     emit(GetSourcesLoadingState());
     try {
       Response response = await dio.get(
-        "$BASEURL/v2/top-headlines/sources?apiKey=$APIKEY",
+        "$BASEURL/v2/top-headlines/sources?apiKey=$APIKEY&category=$categoryId",
       );
 
       sourcesResponse SourcesResponse = sourcesResponse.fromJson(response.data);
