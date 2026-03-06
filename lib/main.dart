@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/core/internet_checker.dart';
 import 'package:news_app/screens/home_screen.dart';
 import 'package:news_app/screens/splash_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  InternetConnectivity().initialize();
   runApp(const MyApp());
 }
 

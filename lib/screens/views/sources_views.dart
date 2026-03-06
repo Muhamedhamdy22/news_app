@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:news_app/core/internet_checker.dart';
+import 'package:news_app/repository/home_local_repo.dart';
+import 'package:news_app/repository/home_remote_repo.dart';
 import 'package:news_app/screens/cubit/cubit.dart';
 import 'package:news_app/screens/cubit/states.dart';
 import 'package:news_app/screens/news_data.dart';
@@ -9,11 +12,13 @@ import 'package:news_app/screens/news_data.dart';
 class SourcesViews extends StatelessWidget {
   String ctId;
    SourcesViews({super.key, required this.ctId});
-
+bool isConnected = true;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeCubit()..getSources(ctId),
+      create: (context) => HomeCubit(
+        InternetConnectivity().isConnected ? HomeRemoteRepo() : HomeLocalRepo()
+      )..getSources(ctId),
       child: BlocConsumer<HomeCubit, HomeStates>(
         listener: (context, state) {
           if (state is GetSourcesLoadingState) {
@@ -63,3 +68,4 @@ class SourcesViews extends StatelessWidget {
     );
   }
 }
+
