@@ -47,11 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  CategoryModal? selectedDrawer;
   onDrawerClicked(){
-    selectedDrawer = null;
-    setState(() {});
+    selectedCategory = null;
     Navigator.pop(context);
+    setState(() {});
   }
 
   CategoryModal? selectedCategory;
