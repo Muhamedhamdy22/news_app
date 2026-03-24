@@ -1,22 +1,19 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/core/constants.dart';
-import 'package:news_app/core/constants.dart' as AppConstants;
-import 'package:news_app/core/dio_interceptor.dart';
+import 'package:injectable/injectable.dart';
 import 'package:news_app/models/news_response.dart';
 import 'package:news_app/models/sources_responce.dart';
 import 'package:news_app/repository/home_repo.dart';
 import 'package:news_app/screens/cubit/states.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
+@injectable
 class HomeCubit extends Cubit<HomeStates> {
   HomeRepo repo;
   HomeCubit(this.repo) : super(HomeInit());
 
-  static HomeCubit get(context) => BlocProvider.of(context);
+  static HomeCubit get(context) => BlocProvider.of<HomeCubit>(context);
   int selectedIndex = 0;
 
-  onTapChanged(int index) {
+  void onTapChanged(int index) {
     selectedIndex = index;
     emit(HomeOnTapChanged());
     getNewsData(sources[selectedIndex].id ?? "");
@@ -40,8 +37,8 @@ class HomeCubit extends Cubit<HomeStates> {
   Future<void> getSources(String categoryId) async {
     emit(GetSourcesLoadingState());
     try {
-      sourcesResponse SourcesResponse =await repo.getSources(categoryId);
-      sources = SourcesResponse.sources ?? [];
+      SourcesResponse sourcesResponse = await repo.getSources(categoryId);
+      sources = sourcesResponse.sources ?? [];
       emit(GetSourcesSuccessState());
       getNewsData(sources[selectedIndex].id ?? "");
     } catch (e) {

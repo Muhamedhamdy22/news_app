@@ -1,33 +1,94 @@
 import 'package:dio/dio.dart';
-import 'package:news_app/core/constants.dart';
-import 'package:news_app/models/news_response.dart';
-import 'package:news_app/models/sources_responce.dart';
+import 'package:injectable/injectable.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
+import 'constants.dart' as AppConstants;
+import 'dio_interceptor.dart';
+
+@lazySingleton
 class ApiManager {
- static final dio = Dio();
+  late final Dio _dio;
 
- // static Future<sourcesResponse?> getSources() async {
- //    try {
- //      Response response = await dio.get(
- //        "$BASEURL/v2/top-headlines/sources?apiKey=$APIKEY",
- //      );
- //
- //      sourcesResponse SourcesResponse = sourcesResponse.fromJson(response.data);
- //      return SourcesResponse;
- //    } catch (e) {
- //      throw Exception("something Went Wrong");
- //    }
- //  }
+  ApiManager() {
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: AppConstants.BASEURL,
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
+        headers: {
+          "x-api-key": AppConstants.APIKEY,
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+    _setupInterceptors();
+  }
 
-  // static Future<NewsResponse?>getNewsData (String sourceId) async{
-  //  try {
-  //    Response response = await dio.get(
-  //      "$BASEURL/v2/everything?sources=$sourceId&apiKey=$APIKEY",
-  //    );
-  //    NewsResponse newsResponse = NewsResponse.fromJson(response.data);
-  //    return newsResponse;
-  //  }catch (e){
-  //    throw Exception("something Went Wrong");
-  //  }
-  // }
+  void _setupInterceptors() {
+    _dio.interceptors.addAll([
+      PrettyDioLogger(
+        request: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+      ),
+      MyInterceptor(),
+    ]);
+  }
+
+  Future<Response> get(
+      String url, {
+        Map<String, dynamic>? queryParameters,
+        Options? options,
+      }) async {
+    try {
+      return await _dio.get(
+        url,
+        queryParameters: queryParameters,
+        options: options,
+      );
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<Response> post(
+      String url, {
+        dynamic data,
+        Map<String, dynamic>? queryParameters,
+        Options? options,
+      }) async {
+    try {
+      return await _dio.post(
+        url,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+      );
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+
+
+  Exception _handleError(DioException e) {
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.receiveTimeout:
+      case DioExceptionType.sendTimeout:
+        return Exception("Request timed out. Please check your connection.");
+      case DioExceptionType.badResponse:
+        final statusCode = e.response?.statusCode;
+        final message = e.response?.data?["message"] ?? "Unknown error";
+        return Exception("Server error [$statusCode]: $message");
+      case DioExceptionType.cancel:
+        return Exception("Request was cancelled.");
+      case DioExceptionType.connectionError:
+        return Exception("No internet connection.");
+      default:
+        return Exception("Unexpected error: ${e.message}");
+    }
+  }
 }

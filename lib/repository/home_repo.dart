@@ -3,6 +3,6 @@ import 'package:news_app/models/sources_responce.dart';
 
 abstract class HomeRepo {
 
- Future<sourcesResponse> getSources(String catId);
+ Future<SourcesResponse> getSources(String catId);
  Future<NewsResponse> getNewsData(String sourceId);
 }

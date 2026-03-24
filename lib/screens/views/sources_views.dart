@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:news_app/core/api_manager.dart';
 import 'package:news_app/core/internet_checker.dart';
+import 'package:news_app/di.dart';
 import 'package:news_app/repository/home_local_repo.dart';
 import 'package:news_app/repository/home_remote_repo.dart';
 import 'package:news_app/screens/cubit/cubit.dart';
@@ -16,9 +18,7 @@ bool isConnected = true;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeCubit(
-        InternetConnectivity().isConnected ? HomeRemoteRepo() : HomeLocalRepo()
-      )..getSources(ctId),
+      create: (context) => getIt<HomeCubit>()..getSources(ctId),
       child: BlocConsumer<HomeCubit, HomeStates>(
         listener: (context, state) {
           if (state is GetSourcesLoadingState) {
