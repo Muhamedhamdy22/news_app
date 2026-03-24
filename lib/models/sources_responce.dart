@@ -1,10 +1,10 @@
-class sourcesResponse {
+class SourcesResponse {
   String? status;
   List<Sources>? sources;
 
-  sourcesResponse({this.status, this.sources});
+  SourcesResponse({this.status, this.sources});
 
-  sourcesResponse.fromJson(Map<String, dynamic> json) {
+  SourcesResponse.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     if (json['sources'] != null) {
       sources = <Sources>[];
